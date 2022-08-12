@@ -1,8 +1,7 @@
+from multiprocessing.resource_sharer import stop
 from config import API_KEY, API_SECRET
 from flask import Flask, render_template, request
 import config, json, requests
-from time import sleep
-
 import ccxt as tradeapi
 
 print('CCXT Version:', tradeapi.__version__)
@@ -14,23 +13,17 @@ exchange = tradeapi.phemex({
 })
 
 exchange.verbose = False
-exchange.set_sandbox_mode(True)  # uncomment to use the testnet sandbox
-
-# params = {
-#     'currency': market['quoteId'],
-# }
-# response = exchange.privateGetAccountsAccountPositions(params)
-# pprint(response)
+exchange.set_sandbox_mode(True)  # set to false for real net
 
 app = Flask(__name__)
 
 
 # todo :: fix me
-# @app.route('/')
-# def dashboard():
-#     orders = tradeapi.phemex.fetch_open_orders()
+@app.route('/dashboard')
+def dashboard():
+    orders = exchange.fetch_positions(None, {'code':'BTC'})
     
-#     return render_template('dashboard.html', alpaca_orders=orders)
+    return render_template('dashboard.html', phemex_orders=orders)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -43,9 +36,7 @@ def webhook():
             'code': 'error',
             'message': 'nice try buddy'
         }
-        
 
-    # Declarations
     opening_order = ""
         
     # Market position datas
@@ -115,7 +106,7 @@ def webhook():
         
     # Reset leverage to 1
     # try:
-    #     leverageResponse = exchange.set_leverage('cross', symbol)
+    #     leverageResponse = exchange.set_leverage(1, symbol)
     #     print(leverageResponse)
     # except Exception as e:
     #     print(f"Leverage reset error = {e}")
@@ -126,10 +117,11 @@ def webhook():
         chat_message = {
             "username": "1337 bot has something to say",
             "avatar_url": "https://i.imgur.com/oF6ANhV.jpg",
-            "content": f"tradingview strategy alert triggered: {symbol} {quantity} @ {price}"
+            "content": f"\n 🔮 Quant alert triggered!\n {symbol} \n Entry {price} \n take-profit {takeprofit} \n stoploss {stoploss}"
         }
 
         requests.post(config.DISCORD_WEBHOOK_URL, json=chat_message)
-
+    
+    # telegram for cornix coming here soon ™️
 
     return webhook_message
