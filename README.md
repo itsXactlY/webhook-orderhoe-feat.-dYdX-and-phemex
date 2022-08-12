@@ -1,9 +1,15 @@
-# wip - not for productive usage (yet?)
-not useable for live trading - be warned
-
 # webhook-orderhoe-feat.-phemex
-TradingView Strategy Alert Webhook for phemex or any ccxt supported exchange and Discord
+TradingView Strategy Alert Webhook for phemex or any ccxt supported exchange plus Discord alerts.
 
-## YouTube Tutorial on how to use this code (old code base this fork is based on)
+if u like this work, join me and grab an exclusive BTC bonus on top. https://phemex.com/register-vt1?referralCode=D5ATL
 
-https://www.youtube.com/watch?v=XPTb3adEQEE
+
+# Quick 'n dirty how to for your doomers
+
+git clone https://github.com/itsaLca/webhook-orderhoe-feat.-phemex
+cd webhook-orderhoe-feat.-phemex
+python3 -m venv .
+source venv/bin/activate
+pip3 install -r requirements.txt
+Edit api key in config.py
+flask run
