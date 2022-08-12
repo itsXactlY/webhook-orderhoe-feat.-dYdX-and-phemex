@@ -20,3 +20,9 @@ pip3 install -r requirements.txt
 Edit api key in config.py
 
 flask run
+
+throw webhooks from tradingview, tuned, quants, etc. at 127.0.0.1/webhook 
+
+# example test
+
+curl -X POST -H "Content-Type: application/json" -d @phemex_example_webhook.json http://localhost:5000/webhook
