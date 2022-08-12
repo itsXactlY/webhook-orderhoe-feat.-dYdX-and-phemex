@@ -28,3 +28,7 @@ throw webhooks from tradingview, tuned, quants, weather forecasts etc. to localh
 # example test
 
 curl -X POST -H "Content-Type: application/json" -d @phemex_example_webhook.json http://localhost:5000/webhook
+
+# Final step
+
+Get vps in Singapore for phemex. Best option same co-location: AWS ap-southeast-1 region (Singapore, Asia Pacific)
