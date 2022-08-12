@@ -1,4 +1,5 @@
 # wip - not for productive usage (yet?)
+not useable for live trading - be warned
 
 # webhook-orderhoe-feat.-phemex
 TradingView Strategy Alert Webhook for phemex or any ccxt supported exchange and Discord
