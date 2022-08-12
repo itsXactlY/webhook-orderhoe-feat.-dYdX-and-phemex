@@ -23,7 +23,7 @@ export FLASK_APP=app.py
 
 flask run
 
-throw webhooks from tradingview, tuned, quants, etc. to localhost/webhook 
+throw webhooks from tradingview, tuned, quants, weather forecasts etc. to localhost/webhook 
 
 # example test
 
