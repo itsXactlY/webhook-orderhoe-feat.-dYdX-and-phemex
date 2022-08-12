@@ -19,6 +19,8 @@ pip3 install -r requirements.txt
 
 Edit api key in config.py
 
+export FLASK_APP=app.py
+
 flask run
 
 throw webhooks from tradingview, tuned, quants, etc. to localhost/webhook 
