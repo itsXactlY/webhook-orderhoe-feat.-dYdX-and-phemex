@@ -1,4 +1,3 @@
-from multiprocessing.resource_sharer import stop
 from config import API_KEY, API_SECRET
 from flask import Flask, render_template, request
 import config, json, requests
