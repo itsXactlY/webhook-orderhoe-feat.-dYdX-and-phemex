@@ -4,7 +4,7 @@ TradingView Strategy Alert Webhook for phemex or any ccxt supported exchange plu
 if u like this work, join me and grab an exclusive BTC bonus on top. https://phemex.com/register-vt1?referralCode=D5ATL
 
 
-# Quick 'n dirty how to for your doomers
+# Quick 'n dirty how to
 
 
 git clone https://github.com/itsaLca/webhook-orderhoe-feat.-phemex
