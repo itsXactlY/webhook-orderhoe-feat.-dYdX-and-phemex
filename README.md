@@ -21,7 +21,7 @@ Edit api key in config.py
 
 flask run
 
-throw webhooks from tradingview, tuned, quants, etc. at 127.0.0.1/webhook 
+throw webhooks from tradingview, tuned, quants, etc. to localhost/webhook 
 
 # example test
 
