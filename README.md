@@ -11,7 +11,7 @@ git clone https://github.com/itsaLca/webhook-orderhoe-feat.-phemex
 
 cd webhook-orderhoe-feat.-phemex
 
-python3 -m venv .
+python3 -m venv venv
 
 source venv/bin/activate
 
