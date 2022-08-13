@@ -1,14 +1,16 @@
-from config import API_KEY, API_SECRET
 from flask import Flask, render_template, request
-import config, json, requests
+import json, requests
+import config
+from config import API_KEY, API_SECRET, WEBHOOK_PASSPHRASE
+from telegram import Bot
 import ccxt as tradeapi
 
 print('CCXT Version:', tradeapi.__version__)
 
 exchange = tradeapi.phemex({
     'enableRateLimit': True,
-    'apiKey': config.API_KEY,  # testnet keys if using the testnet sandbox
-    'secret': config.API_SECRET,
+    'apiKey': API_KEY,  # testnet keys if using the testnet sandbox
+    'secret': API_SECRET,
 })
 
 exchange.verbose = False
@@ -30,7 +32,7 @@ def webhook():
     
     webhook_message = json.loads(request.data)
     
-    if webhook_message['passphrase'] != config.WEBHOOK_PASSPHRASE:
+    if webhook_message['passphrase'] != WEBHOOK_PASSPHRASE:
         return {
             'code': 'error',
             'message': 'nice try buddy'
@@ -112,15 +114,30 @@ def webhook():
   
 
     # if a DISCORD URL is set in the config file, we will post to the discord webhook
-    if config.DISCORD_WEBHOOK_URL:
+    if config.DISCORD_ENABLED:
         chat_message = {
             "username": "1337 bot has something to say",
             "avatar_url": "https://i.imgur.com/oF6ANhV.jpg",
-            "content": f"\n 🔮 Quant alert triggered!\n {symbol} \n Entry {price} \n take-profit {takeprofit} \n stoploss {stoploss}"
+            "content": f"\n 🔮 Quant alert triggered!\n {symbol} \n Entry {price} \n Takeprofit {takeprofit} \n Stoploss {stoploss}"
         }
 
         requests.post(config.DISCORD_WEBHOOK_URL, json=chat_message)
     
     # telegram for cornix coming here soon ™️
+    if config.TELEGRAM_ENABLED:
+        tg_bot = Bot(token=config.TELEGRAM_TOKEN)
+        
+        chat_message = f'''
+        🔮 Quant alert triggered!
+        {symbol}
+        Leverage: isolated 10x
+        Entry: {price}
+        Takeprofit {takeprofit}
+        Stoploss {stoploss}
+        '''
+        
+        tg_bot.sendMessage(config.TELEGRAM_CHANNEL, chat_message)
+
+
 
     return webhook_message
