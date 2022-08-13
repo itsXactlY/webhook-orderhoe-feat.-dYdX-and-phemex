@@ -7,8 +7,8 @@
         "order_action": "{{strategy.order.action}}",
         "order_contracts": "{{strategy.order.contracts}}",
         "order_price": "{{strategy.order.price}}",
-        "order_takeprofit": "{{plot("Take Profit")}}",
-        "order_stoploss": "{{plot("Stop Loss Safe")}}",
+        "order_takeprofit": "{{plot(Take Profit)}}",
+        "order_stoploss": "{{plot(Stop Loss Safe)}}",
         "prev_market_situation": "flat",
         "prev_market_position_size": 0
     },
