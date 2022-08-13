@@ -1,5 +1,5 @@
 # webhook-orderhoe-feat.-phemex
-TradingView Strategy Alert Webhook for phemex or any ccxt supported exchange plus Discord alerts.
+TradingView Strategy Alert Webhook for phemex or any ccxt supported exchange plus Discord / Telegram alerts.
 
 if u like this work, join me and grab an exclusive BTC bonus on top. https://phemex.com/register-vt1?referralCode=D5ATL
 
