@@ -1,24 +1,24 @@
+from config import API_KEY, API_SECRET
 from flask import Flask, render_template, request
-import json, requests
-import config
-from config import API_KEY, API_SECRET, WEBHOOK_PASSPHRASE
 from telegram import Bot
+import config
+import json, requests
 import ccxt as tradeapi
+import concurrent.futures
 
+# CCXT
 print('CCXT Version:', tradeapi.__version__)
-
 exchange = tradeapi.phemex({
     'enableRateLimit': True,
     'apiKey': API_KEY,  # testnet keys if using the testnet sandbox
     'secret': API_SECRET,
 })
-
 exchange.verbose = False
 exchange.set_sandbox_mode(True)  # set to false for real net
 
 app = Flask(__name__)
 
-
+# Dashboard
 # todo :: fix me
 @app.route('/dashboard')
 def dashboard():
@@ -26,13 +26,14 @@ def dashboard():
     
     return render_template('dashboard.html', phemex_orders=orders)
 
+# Webhook
 @app.route('/webhook', methods=['POST'])
 def webhook():
     print(f"==> data getting from request ...")
     
     webhook_message = json.loads(request.data)
     
-    if webhook_message['passphrase'] != WEBHOOK_PASSPHRASE:
+    if webhook_message['passphrase'] != config.WEBHOOK_PASSPHRASE:
         return {
             'code': 'error',
             'message': 'nice try buddy'
@@ -121,7 +122,10 @@ def webhook():
             "content": f"\n 🔮 Quant alert triggered!\n {symbol} \n Entry {price} \n Takeprofit {takeprofit} \n Stoploss {stoploss}"
         }
 
-        requests.post(config.DISCORD_WEBHOOK_URL, json=chat_message)
+        thread_x = requests.post(config.DISCORD_WEBHOOK_URL, json=chat_message)
+        # thread discord webhook
+        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+            executor.map(thread_x, range(3))
     
     # telegram for cornix coming here soon ™️
     if config.TELEGRAM_ENABLED:
@@ -136,8 +140,10 @@ def webhook():
         Stoploss {stoploss}
         '''
         
-        tg_bot.sendMessage(config.TELEGRAM_CHANNEL, chat_message)
-
+        thread_y = tg_bot.sendMessage(config.TELEGRAM_CHANNEL, chat_message)       
+        # thread telegram message
+        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+            executor.map(thread_y, range(3))
 
 
     return webhook_message
