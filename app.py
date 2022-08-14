@@ -7,15 +7,17 @@ import ccxt as tradeapi
 import concurrent.futures
 
 # CCXT
-print('CCXT Version:', tradeapi.__version__)
 exchange = tradeapi.phemex({
     'enableRateLimit': True,
-    'apiKey': API_KEY,  # testnet keys if using the testnet sandbox
+    'apiKey': API_KEY,
     'secret': API_SECRET,
 })
-exchange.verbose = False
 exchange.set_sandbox_mode(True)  # set to false for real net
+exchange.verbose = False
+if exchange.verbose == True:
+    print('CCXT Version:', tradeapi.__version__)
 
+# Flask Webhook
 app = Flask(__name__)
 
 # Dashboard
@@ -124,10 +126,10 @@ def webhook():
 
         thread_x = requests.post(config.DISCORD_WEBHOOK_URL, json=chat_message)
         # thread discord webhook
-        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
             executor.map(thread_x, range(3))
     
-    # telegram for cornix coming here soon ™️
+    # telegram for https://t.me/cornix_trading_bot?start=ref-753f57ac5bc94e73a8d0581ea166926a 
     if config.TELEGRAM_ENABLED:
         tg_bot = Bot(token=config.TELEGRAM_TOKEN)
         
@@ -142,7 +144,7 @@ def webhook():
         
         thread_y = tg_bot.sendMessage(config.TELEGRAM_CHANNEL, chat_message)       
         # thread telegram message
-        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
             executor.map(thread_y, range(3))
 
 
