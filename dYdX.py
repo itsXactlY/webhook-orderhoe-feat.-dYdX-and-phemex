@@ -1,7 +1,8 @@
 
-from multiprocessing.resource_sharer import stop
 import config
-from flask import Flask, request
+import concurrent.futures
+from concurrent.futures.process import _MAX_WINDOWS_WORKERS
+
 
 from dydx3 import Client
 from dydx3.constants import API_HOST_ROPSTEN
@@ -9,13 +10,15 @@ from dydx3.constants import NETWORK_ID_ROPSTEN
 from dydx3.constants import ORDER_TYPE_LIMIT, ORDER_TYPE_MARKET, ORDER_TYPE_STOP, ORDER_TYPE_TAKE_PROFIT, ORDER_TYPE_STOP_MARKET
 from dydx3.constants import TIME_IN_FORCE_FOK, TIME_IN_FORCE_GTT, TIME_IN_FORCE_IOC
 
+from flask import Flask, request
+
 from web3 import Web3
 
-from telegram import Bot
+from telegram import Bot as bot
 
 import time
 import json, requests
-import concurrent.futures
+
 
 # Ganache test address.
 ETHEREUM_ADDRESS = '0x3dB9FcCC80Eb5dFCCfE6599Df7E7801301aC277f'
@@ -44,13 +47,12 @@ app = Flask(__name__)
 
 # Flip Order side for Stoploss orders, quick 'n dirty lol
 
-def get_sl():
+def flip_position_side():
     webhook_message = json.loads(request.data)
     side = webhook_message['strategy']['order_action']
     
     if side == "BUY": stop = "SELL"
     else: stop = "BUY"
-    print(stop)
     return stop
 
 # Webhook
@@ -86,20 +88,20 @@ def webhook():
         'size': quantity,
         'price': str(price),
         'limit_fee': '0.0015',
-        'expiration_epoch_seconds': time.time() + 61,
+        'expiration_epoch_seconds': time.time() + 43800 * 60, # 1month
         'time_in_force': TIME_IN_FORCE_GTT,
         }
 
     order_params_stop = { 
         'position_id': position_id,
         'market': symbol_d,
-        'side': get_sl(),
+        'side': flip_position_side(),
         'order_type': ORDER_TYPE_STOP,
         'post_only': False,
         'size': quantity,
         'price': str(stoploss),
         'limit_fee': '0.0015',
-        'expiration_epoch_seconds': time.time() + 120,
+        'expiration_epoch_seconds': time.time() + 43800 * 60, # 1month
         'time_in_force': TIME_IN_FORCE_GTT,
         'trigger_price': str(stoploss),
         'reduce_only': False,
@@ -108,35 +110,25 @@ def webhook():
     order_params_takeprofit = {
         'position_id': position_id,
         'market': symbol_d,
-        'side': get_sl(),
+        'side': flip_position_side(),
         'order_type': ORDER_TYPE_TAKE_PROFIT,
         'post_only': True,
         'size': quantity,
         'price': str(takeprofit),
         'trigger_price': str(takeprofit),
         'limit_fee': '0.0015',
-        'expiration_epoch_seconds': time.time() + 120,
+        'expiration_epoch_seconds': time.time() + 43800 * 60, # 1month
         'time_in_force': TIME_IN_FORCE_GTT,
         'reduce_only': False,
         }
     
-    # Entry
-    order_entry_respone = client.private.create_order(**order_params_entry)
-    order_id = order_entry_respone.data["order"]
-    print(f"Order Successful send to dYdX. Order id are: {order_id}")
-    
-    # Stop
-    order_stop_respone = client.private.create_order(**order_params_stop)
-    order_id = order_stop_respone.data["order"]
-    print(f"Order Successful send to dYdX. Order id are: {order_id}")
-    
-    # TP
-    order_tp_respone = client.private.create_order(**order_params_takeprofit)
-    order_id = order_tp_respone.data["order"]
-    print(f"Order Successful send to dYdX. Order id are: {order_id}")
+    # Order Threads
+    order_entry_respone_thread = client.private.create_order(**order_params_entry)
+    order_stop_respone_thread = client.private.create_order(**order_params_stop)
+    order_tp_respone_thread = client.private.create_order(**order_params_takeprofit)
+
   
-  
-      # if a DISCORD URL is set in the config file, we will post to the discord webhook
+    # if a DISCORD URL is set in the config file, we will post to the discord webhook
     if config.DISCORD_ENABLED:
         chat_message = {
             "username": "1337 bot has something to say",
@@ -147,7 +139,7 @@ def webhook():
     
     # telegram for https://t.me/cornix_trading_bot?start=ref-753f57ac5bc94e73a8d0581ea166926a 
     if config.TELEGRAM_ENABLED:
-        tg_bot = Bot(token=config.TELEGRAM_TOKEN)
+        tg_bot = bot(token=config.TELEGRAM_TOKEN)
         
         chat_message = f'''
         🔮 Quant alert triggered!
@@ -159,11 +151,12 @@ def webhook():
         '''
         thread_y = tg_bot.sendMessage(config.TELEGRAM_CHANNEL, chat_message)
         
-        
-    # Send Messages to the world    
-    # threading bot messages
-    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-        executor.map(thread_x and thread_y, range(3))
+    # Threading Messages to the world
+    with concurrent.futures.ThreadPoolExecutor(_MAX_WINDOWS_WORKERS-1) as executor:
+        executor.map(order_entry_respone_thread, range(3))
+        executor.map(order_stop_respone_thread, range(3))
+        executor.map(order_tp_respone_thread, range(3))
+        executor.map(thread_x, range(3))
+        executor.map(thread_y, range(3))
 
-
-    return webhook_message, order_id
+    return "done"
