@@ -1,0 +1,11 @@
+{
+    "passphrase": "123",
+    "strategy": {
+        "order_action": "BUY",
+        "order_contracts": "1",
+        "order_price": "30",
+        "order_takeprofit": "35",
+        "order_stoploss": "28"
+    },
+    "ticker_d": "ETC-USD"
+}
