@@ -57,33 +57,12 @@ def webhook():
         # Opening a pending contract (limit) order
         opening_order = exchange.create_order(symbol_p, 'limit', 'buy', quantity, price, {'stopLossPrice': stoploss, 'takeProfitPrice': takeprofit})
         print("Opening Phemex Order!", opening_order)
-
-
+        
     if side == "sell" or "SELL":
         # Opening a pending contract (limit) order
         opening_order = exchange.create_order(symbol_p, 'limit', 'sell', quantity, price, {'stopLossPrice': stoploss, 'takeProfitPrice': takeprofit})
         print("Opening Phemex Order!", opening_order)
 
-    
-    
-    # aLca :: dYdX Orders here
-    
-    order_params = {
-        'position_id': position_id,
-        'market': symbol_d,
-        'side': side,
-        'order_type': ORDER_TYPE_MARKET,
-        'post_only': False,
-        'size': quantity,
-        'price': str(price),
-        'limit_fee': '0.0015',
-        'expiration_epoch_seconds': time.time() + 120,
-        }
-    
-    order_response = client.private.create_order(**order_params)
-    order_id = order_response.data["order"]
-    print(f"Order Successful send to dYdX. Order id is: {order_id}")
-  
 
     # if a DISCORD URL is set in the config file, we will post to the discord webhook
     if config.DISCORD_ENABLED:
@@ -117,4 +96,4 @@ def webhook():
             executor.map(thread_y, range(3))
 
 
-    return webhook_message, order_id
+    return webhook_message
