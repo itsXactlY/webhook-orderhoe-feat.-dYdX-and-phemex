@@ -135,7 +135,6 @@ def webhook():
             "avatar_url": "https://i.imgur.com/oF6ANhV.jpg",
             "content": f"\n 🔮 Quant alert triggered!\n {side} {symbol_d} \n Entry {price} \n Takeprofit {takeprofit} \n Stoploss {stoploss}"
         }
-        thread_x = requests.post(config.DISCORD_WEBHOOK_URL, json=chat_message)
     
     # telegram for https://t.me/cornix_trading_bot?start=ref-753f57ac5bc94e73a8d0581ea166926a 
     if config.TELEGRAM_ENABLED:
@@ -149,8 +148,7 @@ def webhook():
         Takeprofit {takeprofit}
         Stoploss {stoploss}
         '''
-        thread_y = tg_bot.sendMessage(config.TELEGRAM_CHANNEL, chat_message)
-        
+
     # Threading Messages to the world
     with concurrent.futures.ThreadPoolExecutor(_MAX_WINDOWS_WORKERS-1) as executor:
         executor.map(order_entry_respone_thread, range(3))
@@ -160,3 +158,4 @@ def webhook():
         executor.map(thread_y, range(3))
 
     return "done"
+

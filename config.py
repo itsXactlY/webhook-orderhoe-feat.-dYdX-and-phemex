@@ -6,10 +6,10 @@ API_SECRET = ''
 # Webhook Password
 WEBHOOK_PASSPHRASE = '123'
 
-
 # Discord Alert Webhook
 DISCORD_ENABLED = True
-DISCORD_WEBHOOK_URL = '' # use a string containing your discord webhook url to enable, like: https://discord.com/api/webhooks/100...
+DISCORD_WEBHOOK_URL_ZERODAY = 'https://discord.com/api/webhooks/' # use a string containing your discord webhook url to enable
+DISCORD_WEBHOOK_URL_TOURISTINFORMATION = 'https://discord.com/api/webhooks/'
 
 
 # Telegram Alert Message
