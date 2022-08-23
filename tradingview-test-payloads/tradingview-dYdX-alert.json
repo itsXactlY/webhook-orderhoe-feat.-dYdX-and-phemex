@@ -5,7 +5,7 @@
         "order_contracts": "{{strategy.order.contracts}}",
         "order_price": "{{strategy.order.price}}",
         "order_takeprofit": "{{plot(Take Profit)}}",
-        "order_stoploss": "{{plot(Stop Loss Safe)}}",
+        "order_stoploss": "{{plot(Stop Loss Safe)}}"
     },
     "ticker_d": "ETC-USD"
 }

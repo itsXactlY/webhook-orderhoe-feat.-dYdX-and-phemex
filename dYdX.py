@@ -1,4 +1,5 @@
 import config
+
 import concurrent.futures
 from concurrent.futures.process import _MAX_WINDOWS_WORKERS
 
@@ -9,14 +10,16 @@ from dydx3.constants import NETWORK_ID_ROPSTEN
 from dydx3.constants import ORDER_TYPE_LIMIT, ORDER_TYPE_MARKET, ORDER_TYPE_STOP, ORDER_TYPE_TAKE_PROFIT, ORDER_TYPE_STOP_MARKET
 from dydx3.constants import TIME_IN_FORCE_FOK, TIME_IN_FORCE_GTT, TIME_IN_FORCE_IOC
 
-from flask import Flask, request
+from flask import request
+
+import json
+import requests
 
 from web3 import Web3
 
 from telegram import Bot as bot
-
 import time
-import json, requests
+
 
 
 # Ganache test address.
@@ -34,17 +37,14 @@ client = Client(
 
 # Set STARK key.
 stark_private_key = client.onboarding.derive_stark_key()
-client.stark_private_key = '0x2c6a135115741592b3b600b8048d4cb9dabde144c17b5b158b745e1ce666a8a' # stark_private_key
+client.stark_private_key = stark_private_key
 
 # Get our position ID.
 account_response = client.private.get_account()
 position_id = account_response.data['account']['positionId']
 
 
-# Flask Webhook
-app = Flask(__name__)
-
-# Flip Order side for Stoploss orders, quick 'n dirty lol
+# Flip Order side for Take Profit abd Stoploss orders, quick 'n dirty lol
 
 def flip_position_side():
     webhook_message = json.loads(request.data)
@@ -54,19 +54,12 @@ def flip_position_side():
     else: stop = "BUY"
     return stop
 
+
 # Webhook
-@app.route('/webhook', methods=['POST'])
-def webhook():
-    print(f"==> data getting from request ...")
+
+def dydx_order(webhook_message):
+    print(f"==> dYdX data getting from request ...")
     
-    webhook_message = json.loads(request.data)
-    
-    if webhook_message['passphrase'] != config.WEBHOOK_PASSPHRASE:
-        return {
-            'code': 'error',
-            'message': 'nice try buddy'
-        }
-        
     # Market position datas
 
     side = webhook_message['strategy']['order_action']
@@ -74,7 +67,8 @@ def webhook():
     price = webhook_message['strategy']['order_price']
     takeprofit = webhook_message['strategy']['order_takeprofit']
     stoploss = webhook_message['strategy']['order_stoploss']
-    symbol_d = webhook_message['ticker_d']
+    symbol_d = webhook_message['ticker']
+
 
     # aLca :: dYdX Orders here
         
@@ -121,10 +115,14 @@ def webhook():
         'reduce_only': False,
         }
     
+    
     # Order Threads
-    order_entry_respone_thread = client.private.create_order(**order_params_entry)
-    order_stop_respone_thread = client.private.create_order(**order_params_stop)
-    order_tp_respone_thread = client.private.create_order(**order_params_takeprofit)
+    try:
+        order_entry_respone_thread = client.private.create_order(**order_params_entry)
+        order_stop_respone_thread = client.private.create_order(**order_params_stop)
+        order_tp_respone_thread = client.private.create_order(**order_params_takeprofit)
+    except Exception as e:
+        print(f"dYdX Order error = {e}")
 
   
     # if a DISCORD URL is set in the config file, we will post to the discord webhook
@@ -150,7 +148,8 @@ def webhook():
         Stoploss {stoploss}
         '''
         telegram_x = tg_bot.sendMessage(config.TELEGRAM_CHANNEL, chat_message)
-        
+
+
     # Threading Messages to the world
     with concurrent.futures.ThreadPoolExecutor(_MAX_WINDOWS_WORKERS-1) as executor:
         executor.map(order_entry_respone_thread, range(3))

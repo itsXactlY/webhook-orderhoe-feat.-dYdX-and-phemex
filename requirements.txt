@@ -2,4 +2,3 @@ ccxt
 flask
 requests
 python-telegram-bot
-dydx-v3-python
