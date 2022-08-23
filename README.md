@@ -1,9 +1,12 @@
-# webhook-orderhoe-feat.-phemex
+# webhook orderhoe for dYdX, phemex, ??? (more to come with demand)
 TradingView/Tuned/Quant Strategy Alert Webhook for dYdX and phemex or any ccxt supported exchange. Also including Discord and Telegram Telegram alerts.
 
 if u like this work, join me and grab an exclusive BTC bonus on top at Phemex: https://phemex.com/register-vt1?referralCode=D5ATL
 or trade with ZERO Fees Decentral (!) at dYdX: https://dydx.exchange/r/MNZFTIFU
 
+
+# dYdX dropped for now
+Testnet was done. Getting things straight on Live is a complete different story,.. Fun intended...
 
 # Quick 'n dirty how to
 
