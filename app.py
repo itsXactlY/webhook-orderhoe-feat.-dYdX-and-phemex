@@ -2,7 +2,7 @@ import config
 from concurrent.futures.process import _MAX_WINDOWS_WORKERS
 import concurrent.futures
 import json
-from dYdX import dydx_order
+
 from phemex import phemex_order
 
 from flask import Flask, request
@@ -53,22 +53,8 @@ def alerts(data):
         executor.map(discord_x, range(3))
         executor.map(discord_y, range(3))
 
+
 # Webhook
-@app.route('/webhoe_dydx', methods=['POST'])
-def get_route_dydx():
-    webhook_message = json.loads(request.data)
-    
-    if webhook_message['passphrase'] != config.WEBHOOK_PASSPHRASE:
-        return {
-            'code': 'error',
-            'message': 'nice try buddy'
-        }
-        
-    alerts(webhook_message)
-    
-    return dydx_order(webhook_message)
-
-
 @app.route('/webhoe_phemex', methods=['POST'])
 def get_route_phemex():
     webhook_message = json.loads(request.data)
