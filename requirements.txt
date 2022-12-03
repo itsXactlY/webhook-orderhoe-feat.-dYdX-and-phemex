@@ -1,9 +1,5 @@
-ccxt
+wheel
 flask
-requests
 python-telegram-bot
-web3
-python-dateutil-2.8.2
-ecdsa
-mpmath
-sympy
+requests
+fake_useragent
