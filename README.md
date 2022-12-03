@@ -36,4 +36,6 @@ curl -X POST -H "Content-Type: application/json" -d @phemex_test_webhook.json ht
 
 Host a vps in Singapore for phemex. Best option same co-location: AWS ap-southeast-1 region (Singapore, Asia Pacific)
 
-* Deprecated.
+
+
+* *Tuned is Deprecated. 
