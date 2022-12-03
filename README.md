@@ -38,4 +38,6 @@ Host a vps in Singapore for phemex. Best option same co-location: AWS ap-southea
 
 
 
-* *Tuned is Deprecated. 
+* *
+
+Tuned is deprecated since dec 1. 
