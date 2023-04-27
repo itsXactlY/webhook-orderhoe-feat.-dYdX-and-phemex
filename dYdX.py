@@ -17,7 +17,7 @@ import time
 
 
 # Ganache test address.
-ETHEREUM_ADDRESS = '0x3dB9FcCC80Eb5dFCCfE6599Df7E7801301aC277f'
+ETHEREUM_ADDRESS = '0x00007...'
 
 # Ganache node.
 WEB_PROVIDER_URL = 'http://localhost:8545'
@@ -112,9 +112,9 @@ def dydx_order(webhook_message):
         order_tp_respone_thread = client.private.create_order(**order_params_takeprofit)
 
         with concurrent.futures.ThreadPoolExecutor(_MAX_WINDOWS_WORKERS-1) as executor:
-            executor.map(order_entry_respone_thread, range(3))
-            executor.map(order_stop_respone_thread, range(3))
-            executor.map(order_tp_respone_thread, range(3))
+            executor.map(order_entry_respone_thread, range(1))
+            executor.map(order_stop_respone_thread, range(1))
+            executor.map(order_tp_respone_thread, range(1))
     
     except Exception as e:
         print(f"dYdX Order error = {e}")
