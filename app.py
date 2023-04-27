@@ -49,9 +49,9 @@ def alerts(data):
 
     # Threading Messages to the world
     with concurrent.futures.ThreadPoolExecutor(_MAX_WINDOWS_WORKERS-1) as executor:
-        executor.map(telegram_x, range (3))
-        executor.map(discord_x, range(3))
-        executor.map(discord_y, range(3))
+        executor.map(telegram_x, range (1))
+        executor.map(discord_x, range(1))
+        executor.map(discord_y, range(1))
 
 # Webhook
 @app.route('/webhoe_dydx', methods=['POST'])
