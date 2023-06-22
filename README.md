@@ -30,6 +30,7 @@ throw webhooks from tradingview, tuned*, quants, weather forecasts etc. to local
 
 # example test
 
+cd tradingview-test-payloads
 curl -X POST -H "Content-Type: application/json" -d @phemex_test_webhook.json http://localhost:5000/webhook
 
 # Final step
